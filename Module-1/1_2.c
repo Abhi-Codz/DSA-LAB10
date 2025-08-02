@@ -1,79 +1,95 @@
 // Q1.2 Write a program to create an array of n elements using dynamic memory allocation. Calculate sum of all the prime elements of the array using function and de-allocate the memory of the array after its use.
 
-#include <stdio.h>   // For input/output functions like printf, scanf
-#include <stdlib.h>  // For dynamic memory allocation functions like malloc, free
+#include <stdio.h>
+#include <stdlib.h>  // For malloc() and free(), and so on that I don't even know its usercase
 
-// Function to check if a number is prime
-// A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.
-// Since stdbool.h is removed, we'll use int for boolean return values (0 for false, 1 for true).
-int isPrime(int num) {
-    // Numbers less than or equal to 1 are not prime
-    if (num <= 1) {
-        return 0; // false
+// Function to check whether a number is Prime or not
+int isPrime(int num)
+{
+    // 1 and below aren't prime
+    if(num <= 1)
+    {
+        return 0;
     }
-    // Loop from 2 up to the square root of the number
-    // We only need to check up to sqrt(num) because if a number 'num' has a divisor greater than its square root,
-    // it must also have a divisor smaller than its square root.
-    // Since math.h is removed, we'll use i * i <= num for the square root check.
-    for (int i = 2; i * i <= num; i++) {
-        if (num % i == 0) {
-            return 0; // false (If 'num' is divisible by 'i', it's not prime)
+
+    for(int i = 2; i * i <= num; i++) // Looping to check till the square-root of the number
+    {
+        if(num % i == 0)
+        {
+            return 0; 
         }
     }
-    return 1; // true (If no divisors are found, the number is prime)
+    return 1; 
 }
 
-// Function to calculate the sum of prime elements in an integer array
-int sumOfPrimeElements(int *arr, int size) {
-    int sum = 0; // Initialize sum to 0
-    // Iterate through each element of the array
-    for (int i = 0; i < size; i++) {
-        // If the current element is prime, add it to the sum
-        if (isPrime(arr[i])) { // isPrime now returns 0 or 1
+// Definfing a function to calculate sum of all prime numbers in the array
+int sumOfPrimes(int *arr, int size)
+{
+    int sum = 0;
+
+    for(int i = 0; i < size; i++) // Looping through the array
+    {
+        if(isPrime(arr[i])) // Only add if it's prime
+        {
             sum += arr[i];
         }
     }
-    return sum; // Return the total sum of prime elements
+
+    return sum; // Returning the final sum
 }
 
-int main() {
-    int n;     // Variable to store the size of the array
-    int *arr;  // Pointer to hold the base address of the dynamically allocated array
+int main()
+{
+    int n; // Size of the array
 
-    // Prompt the user to enter the size of the array
-    printf("Enter size of the array: ");
-    scanf("%d", &n); // Read the size from the user
+    // Asking user for array size
+    printf("Enter the size of the array: ");
+    scanf("%d", &n);
 
-    // Dynamically allocate memory for 'n' integers
-    // malloc(size_in_bytes) allocates a block of memory of specified size.
-    // n * sizeof(int) calculates the total bytes needed for 'n' integers.
-    // The result of malloc is a void pointer, which is then cast to (int *)
-    arr = (int *)malloc(n * sizeof(int));
+    // Allocating memory dynamically (This is the part even I've hard time understanding)
+    int *arr = (int *)malloc(n * sizeof(int));
 
-    // Check if memory allocation was successful
-    // If malloc fails (e.g., not enough memory), it returns NULL
-    if (arr == NULL) {
-        printf("Memory allocation failed! Exiting program.\n");
-        return 1; // Return 1 to indicate an error
+    // Checking on Malloc's functionality
+    if(arr == NULL)
+    {
+        printf("Memory allocation failed! Exiting...\n");
+        return 1;
     }
 
-    // Prompt the user to enter the array elements
-    printf("Enter array elements: ");
-    // Loop to read 'n' elements into the dynamically allocated array
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &arr[i]); // Read each element
+    // Taking input for array elements
+    printf("Enter %d elements:\n", n);
+    for(int i = 0; i < n; i++)
+    {
+        scanf("%d", &arr[i]);
     }
 
-    // Call the function to calculate the sum of prime elements
-    int primeSum = sumOfPrimeElements(arr, n);
+    // Calling function and printing the result
+    int result = sumOfPrimes(arr, n);
+    printf("Sum of prime elements = %d\n", result);
 
-    // Display the calculated sum
-    printf("Sum = %d\n", primeSum);
-
-    // Deallocate the dynamically allocated memory
-    // It's crucial to free memory after it's no longer needed to prevent memory leaks.
+    // Freeing up dynamically allocated memory
     free(arr);
-    arr = NULL; // Set the pointer to NULL after freeing to avoid dangling pointer issues
-
-    return 0; // Return 0 to indicate successful program execution
+    return 0;
 }
+
+/*
+> SAMPLE INPUT
+______________
+
+    Enter the size of the array: 10
+    Enter 10 elements:
+    1
+    6
+    8
+    6
+    4
+    3
+    1
+    7
+    8
+    9
+
+> SAMPLE OUTPUT
+_______________
+    Sum of prime elements = 10
+*/
