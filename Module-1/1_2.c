@@ -91,5 +91,6 @@ ______________
 
 > SAMPLE OUTPUT
 _______________
+
     Sum of prime elements = 10
 */
