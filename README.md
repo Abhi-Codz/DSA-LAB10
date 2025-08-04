@@ -25,6 +25,20 @@
     ```
     - Downloading the .ZIP file and unpacking it in your system.
 
+## Suggestions: C Programming Tutorials
+
+Here are some good suggestions for learning the entirety of the C programming language, within a couple of hours.
+
+### YouTube Tutorials
+
+- C Programming Tutorial for Beginners - FreeCodeCamp - 17M Views ([here](https://www.youtube.com/watch?v=KJgsSFOSQv0))
+- C Programming Full Course for free ⚙️ (2025) - Bro Code - 347K Views ([here](https://www.youtube.com/watch?v=xND0t1pr3KY))
+
+### Articles / Blog Tutorials
+
+- C Tutorial - W3Schools ([here](https://www.w3schools.com/c/))
+- C Programming - Jyotiprakash's Blog ([here](https://blog.jyotiprakash.org/c-programming))
+
 ## Code Directory
 
 - [Module 1](./Module-1/)
