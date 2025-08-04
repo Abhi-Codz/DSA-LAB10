@@ -1,3 +1,10 @@
+/*
+Q2.2 Write a program to perform the following operations on a given square matrix using functions:
+    i. Find the no.of nonzero elements
+    ii. Display upper triangular matrix
+    iii. Display the elements of just above and below the main diagonal
+*/
+
 #include <stdio.h>
 
 #define SIZE 10
@@ -63,3 +70,26 @@ printf("\nNumber of non-zero elements: %d\n\n", nonZero);
 
     return 0;
 }
+
+/*
+> SAMPLE INPUT
+______________
+
+    Enter size of square matrix: 4
+    Enter elements of matrix:
+        5 0 3 2
+        0 7 1 0
+        4 2 8 9
+        0 6 0 3
+
+> SAMPLE OUTPUT
+_______________
+
+    Non Zero ElementsL 13
+    Upper Triangular Matrix:
+        0 3 2
+          1 0
+            9
+    Above diagonal: 0 1 9
+    Below diagonal: 0 2 0
+*/

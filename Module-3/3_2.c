@@ -1,193 +1,169 @@
-#include <stdio.h>
-#include <stdlib.h> // For malloc, realloc, free
+// 3.2 WAP to perform addition of two given sparse matrix in 3–tuple format.
 
-// Define a structure for a term in the sparse matrix (row, column, value)
-typedef struct {
-    int row;
-    int col;
-    int value;
+#include <stdio.h>
+
+#define MAX 100 // Max terms allowed in each matrix (including header)
+
+// Structure to hold one non-zero term
+typedef struct 
+{
+    int row, col, value;
 } Term;
 
-// Function to read a sparse matrix in 3-tuple format
-// The first line of input specifies total_rows, total_cols, num_terms
-// Subsequent lines specify row, col, value for each non-zero term
-void readSparseMatrix(Term **matrix, int *total_rows, int *total_cols, int *num_terms) {
-    printf("Enter sparse matrix in 3-tuple format (total_rows total_cols num_terms):\n");
-    scanf("%d %d %d", total_rows, total_cols, num_terms);
-
-    // Allocate memory for the terms + 1 (for the header term)
-    // The first element (index 0) will store the matrix dimensions and number of terms
-    *matrix = (Term *)malloc((*num_terms + 1) * sizeof(Term));
-    if (*matrix == NULL) {
-        printf("Memory allocation failed for sparse matrix!\n");
-        exit(1); // Exit if memory allocation fails
-    }
-
-    // Store the header information in the first element
-    (*matrix)[0].row = *total_rows;
-    (*matrix)[0].col = *total_cols;
-    (*matrix)[0].value = *num_terms;
-
-    // Read the actual terms
-    for (int i = 1; i <= *num_terms; i++) {
-        scanf("%d %d %d", &(*matrix)[i].row, &(*matrix)[i].col, &(*matrix)[i].value);
-    }
-}
-
-// Function to display a sparse matrix in 3-tuple format
-void displaySparseMatrix(Term *matrix) {
-    if (matrix == NULL) {
-        printf("Sparse matrix is NULL.\n");
-        return;
-    }
-    if (matrix[0].value == 0 && matrix[0].row == 0 && matrix[0].col == 0) {
-        // This case handles an empty matrix that was explicitly created as such
-        printf("0 0 0\n"); // Represent an empty matrix
-        return;
-    }
-
-    // Display header (total_rows, total_cols, num_terms)
-    printf("%d %d %d\n", matrix[0].row, matrix[0].col, matrix[0].value);
-
-    // Display each term
-    for (int i = 1; i <= matrix[0].value; i++) {
-        printf("%d %d %d\n", matrix[i].row, matrix[i].col, matrix[i].value);
-    }
-}
-
-// Function to add two sparse matrices in 3-tuple format
-// Assumes input matrices are sorted by row, then by column.
-Term* addSparseMatrices(Term *matrix1, Term *matrix2) {
-    // Check for NULL matrices
-    if (matrix1 == NULL || matrix2 == NULL) {
-        printf("One or both input matrices are NULL.\n");
-        return NULL;
-    }
-
-    // Get header information
-    int r1 = matrix1[0].row;
-    int c1 = matrix1[0].col;
-    int n1 = matrix1[0].value;
-
-    int r2 = matrix2[0].row;
-    int c2 = matrix2[0].col;
-    int n2 = matrix2[0].value;
-
-    // Check if dimensions are compatible for addition
-    if (r1 != r2 || c1 != c2) {
-        printf("Matrices have incompatible dimensions for addition.\n");
-        return NULL;
-    }
-
-    // Allocate memory for the resultant matrix. Max possible terms = n1 + n2.
-    // +1 for the header term.
-    Term *resultant_matrix = (Term *)malloc((n1 + n2 + 1) * sizeof(Term));
-    if (resultant_matrix == NULL) {
-        printf("Memory allocation failed for resultant matrix!\n");
-        exit(1);
-    }
-
-    // Initialize indices for iterating through matrices
-    int i = 1; // Index for matrix1 (skip header)
-    int j = 1; // Index for matrix2 (skip header)
-    int k = 1; // Index for resultant_matrix (skip header)
-
-    // Merge-like addition
-    while (i <= n1 && j <= n2) {
-        // Compare terms based on row first, then column
-        if (matrix1[i].row < matrix2[j].row ||
-            (matrix1[i].row == matrix2[j].row && matrix1[i].col < matrix2[j].col)) {
-            // Term from matrix1 comes first, copy it to result
-            resultant_matrix[k++] = matrix1[i++];
-        } else if (matrix1[i].row > matrix2[j].row ||
-                   (matrix1[i].row == matrix2[j].row && matrix1[i].col > matrix2[j].col)) {
-            // Term from matrix2 comes first, copy it to result
-            resultant_matrix[k++] = matrix2[j++];
-        } else {
-            // Terms have the same (row, col) - add their values
-            int sum_val = matrix1[i].value + matrix2[j].value;
-            if (sum_val != 0) { // Only add to result if sum is non-zero
-                resultant_matrix[k].row = matrix1[i].row;
-                resultant_matrix[k].col = matrix1[i].col;
-                resultant_matrix[k].value = sum_val;
-                k++;
+// Defining Helper function to sort terms in row-major order (excluding header - TOO COMPLEX LOL)
+void sortTerms(Term arr[], int n)
+{
+    for(int i = 1; i < n - 1; i++)
+    {
+        for(int j = i + 1; j < n; j++)
+        {
+            if(arr[i].row > arr[j].row || 
+              (arr[i].row == arr[j].row && arr[i].col > arr[j].col))
+            {
+                // Swapping elements if out of order
+                Term temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
             }
-            i++; // Move to next term in matrix1
-            j++; // Move to next term in matrix2
         }
     }
-
-    // Copy remaining terms from matrix1 (if any)
-    while (i <= n1) {
-        resultant_matrix[k++] = matrix1[i++];
-    }
-
-    // Copy remaining terms from matrix2 (if any)
-    while (j <= n2) {
-        resultant_matrix[k++] = matrix2[j++];
-    }
-
-    // Update the header of the resultant matrix
-    resultant_matrix[0].row = r1; // Rows are same as original
-    resultant_matrix[0].col = c1; // Cols are same as original
-    resultant_matrix[0].value = k - 1; // Total number of non-zero terms in result
-
-    // Reallocate to the exact size if needed to save memory
-    // Check if k is greater than 0 before reallocating to avoid issues with 0-sized realloc
-    if (k > 0) {
-        Term *temp = (Term *)realloc(resultant_matrix, k * sizeof(Term));
-        if (temp == NULL && k > 0) { // realloc can return NULL on failure, but old pointer is still valid
-            printf("Memory reallocation failed for resultant matrix (shrinking)!\n");
-            // In a real application, you might handle this more gracefully
-        } else {
-            resultant_matrix = temp;
-        }
-    } else { // If k is 0, it means no terms, so free the initial allocation
-        free(resultant_matrix);
-        resultant_matrix = NULL;
-    }
-
-
-    return resultant_matrix;
 }
 
-int main() {
-    Term *matrix1 = NULL;
-    Term *matrix2 = NULL;
-    Term *resultant_matrix = NULL;
+int main()
+{
+    Term m1[MAX], m2[MAX], result[MAX]; // Arrays for input matrices and result
+    int r1, c1, t1, r2, c2, t2; // Matrix metadata
+    int i = 1, j = 1, k = 1;    // Indices for m1, m2, and result
 
-    int r1, c1, n1; // Dimensions for matrix 1
-    int r2, c2, n2; // Dimensions for matrix 2
-
-    printf("Enter sparse matrix-1 in 3-tuple format\n");
-    readSparseMatrix(&matrix1, &r1, &c1, &n1);
-
-    printf("\nEnter sparse matrix-2 in 3-tuple format\n");
-    readSparseMatrix(&matrix2, &r2, &c2, &n2);
-
-    // Perform addition
-    resultant_matrix = addSparseMatrices(matrix1, matrix2);
-
-    printf("\nResultant Matrix in 3-tuple format\n");
-    if (resultant_matrix != NULL) {
-        displaySparseMatrix(resultant_matrix);
-    } else {
-        printf("Could not compute resultant matrix or matrices were incompatible.\n");
+    // Input for matrix 1
+    printf("Enter sparse matrix-1 in 3-tuple format (rows cols non-zero-count):\n");
+    if(scanf("%d %d %d", &r1, &c1, &t1) != 3 || t1 >= MAX)
+    {
+        printf("Error: Invalid input for matrix 1 header.\n");
+        return 1;
     }
 
-    // Free dynamically allocated memory
-    if (matrix1 != NULL) {
-        free(matrix1);
-        matrix1 = NULL;
+    m1[0] = (Term){r1, c1, t1}; // Storing header info
+
+    for(int x = 1; x <= t1; x++)
+    {
+        if(scanf("%d %d %d", &m1[x].row, &m1[x].col, &m1[x].value) != 3)
+        {
+            printf("Error: Invalid input for matrix 1 term %d.\n", x);
+            return 1;
+        }
     }
-    if (matrix2 != NULL) {
-        free(matrix2);
-        matrix2 = NULL;
+
+    // Input for matrix 2
+    printf("Enter sparse matrix-2 in 3-tuple format (rows cols non-zero-count):\n");
+    if(scanf("%d %d %d", &r2, &c2, &t2) != 3 || t2 >= MAX)
+    {
+        printf("Error: Invalid input for matrix 2 header.\n");
+        return 1;
     }
-    if (resultant_matrix != NULL) {
-        free(resultant_matrix);
-        resultant_matrix = NULL;
+
+    m2[0] = (Term){r2, c2, t2};
+
+    for(int x = 1; x <= t2; x++)
+    {
+        if(scanf("%d %d %d", &m2[x].row, &m2[x].col, &m2[x].value) != 3)
+        {
+            printf("Error: Invalid input for matrix 2 term %d.\n", x);
+            return 1;
+        }
+    }
+
+    // Check dimensions before adding
+    if(r1 != r2 || c1 != c2)
+    {
+        printf("Error: Matrix dimensions do not match for addition.\n");
+        return 1;
+    }
+
+    // Header for the result matrix
+    result[0].row = r1;
+    result[0].col = c1;
+
+    // Adding matrices by merging sorted triples
+    while(i <= t1 && j <= t2)
+    {
+        if(m1[i].row < m2[j].row || 
+          (m1[i].row == m2[j].row && m1[i].col < m2[j].col))
+        {
+            result[k++] = m1[i++];
+        }
+        else if(m1[i].row > m2[j].row || 
+               (m1[i].row == m2[j].row && m1[i].col > m2[j].col))
+        {
+            result[k++] = m2[j++];
+        }
+        else
+        {
+            int sum = m1[i].value + m2[j].value;
+            if(sum != 0) // Only add to result if non-zero
+            {
+                result[k++] = (Term){m1[i].row, m1[i].col, sum};
+            }
+            i++;
+            j++;
+        }
+    }
+
+    // Copy remaining terms from m1 (if any)
+    while(i <= t1)
+    {
+        result[k++] = m1[i++];
+    }
+
+    // Copy remaining terms from m2 (if any)
+    while(j <= t2)
+    {
+        result[k++] = m2[j++];
+    }
+
+    result[0].value = k - 1; // Set total non-zero count
+
+    // Sort result terms (row-major order)
+    sortTerms(result, k);
+
+    // Output the result
+    printf("Resultant Matrix in 3-tuple format:\n");
+    for(int x = 0; x < k; x++)
+    {
+        printf("%d %d %d\n", result[x].row, result[x].col, result[x].value);
     }
 
     return 0;
 }
+
+/*
+> SAMPLE INPUT
+______________
+
+    Enter sparse matrix-1 in 3-tuple format
+        4 5 4
+        0 3 30
+        1 1 10
+        2 3 40
+        3 4 21
+
+    Enter sparse matrix-2 in 3-tuple format
+        4 5 5
+        0 2 65
+        1 1 12
+        2 3 45
+        3 3 71
+        3 4 0
+
+> SAMPLE OUTPUT
+_______________
+
+    Resultant Matrix in 3-tuple format
+        4 5 6
+        0 2 65
+        0 3 30
+        1 1 22
+        2 3 85
+        3 3 71
+        3 4 21
+*/

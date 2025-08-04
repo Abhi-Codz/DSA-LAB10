@@ -1,3 +1,7 @@
+/*
+Q2.3 WAP to represent a given sparse matrix in 3-tuple format using 2-D array.
+*/
+
 #include <stdio.h>
 
 #define SIZE 10
@@ -49,3 +53,25 @@ int rows, cols;
 
     return 0;
 }
+
+/*
+> SAMPLE INPUT
+______________
+
+    Enter size of the sparse matrix: 45
+    Enter elements of sparse matrix: 
+        0 0 14 0   0 
+        0 28 0 0   0
+        0 0  0 35  0
+        0 0  0  0  18
+
+> SAMPLE OUTPUT
+_______________
+
+    Sparse matrix in 3 - tuple format:
+        4 5 4
+        0 2 14
+        1 1 28
+        2 3 35
+        3 4 19
+*/
