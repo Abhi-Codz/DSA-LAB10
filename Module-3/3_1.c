@@ -1,11 +1,11 @@
 // Q3.1 WAP to perform transpose of a given sparse matrix in 3-tuple format.
 
 #include <stdio.h>
-#include <stdlib.h> // Just in case we later use dynamic stuff
+#include <stdlib.h> // Good old Stdlib lol
 
-#define MAX 100 // Max number of triples including metadata
+#define MAX 100 // Max number of terms (including metadata)
 
-// Defining a structure to hold a single non-zero element's info
+// Creating a structure to hold one non-zero entry
 typedef struct 
 {
     int row;
@@ -15,52 +15,67 @@ typedef struct
 
 int main()
 {
-    Triple sparse[MAX], transpose[MAX]; // Original and transposed arrays
-    int rows, cols, nonZero;
+    Triple sparse[MAX], transpose[MAX];
+    int nonZero = 0;        // Count of non-zero elements
+    int maxRow = 0, maxCol = 0; // To track actual matrix size
 
-    // Asking user for matrix metadata
-    printf("Enter number of rows, columns, and non-zero elements: ");
-    scanf("%d %d %d", &rows, &cols, &nonZero);
+    // Input: Using sentinel to stop
+    printf("Enter sparse matrix in 3-tuple format (row col value)\n");
+    printf("Enter -1 -1 -1 to stop:\n");
 
-    // First entry is metadata: size info
-    sparse[0].row = rows;
-    sparse[0].col = cols;
-    sparse[0].val = nonZero;
-
-    // Taking input in 3-tuple format (row, col, value)
-    printf("Enter the 3-tuple representation (row col value):\n");
-    for(int i = 1; i <= nonZero; i++)
+    while(1)
     {
-        scanf("%d %d %d", &sparse[i].row, &sparse[i].col, &sparse[i].val);
-    }
+        int r, c, v;
+        scanf("%d %d %d", &r, &c, &v);
 
-    // Setting metadata for transpose
-    transpose[0].row = cols;   // Rows become columns
-    transpose[0].col = rows;   // Columns become rows
-    transpose[0].val = nonZero;
-
-    int k = 1; // Index for transposed array
-
-    // Transposing by switching row and col of matching elements
-    for(int i = 0; i < cols; i++) // Go column-wise (original)
-    {
-        for(int j = 1; j <= nonZero; j++) // Scan all non-zero entries
+        if(r == -1 && c == -1 && v == -1)
         {
-            if(sparse[j].col == i) // If element belongs to current column
-            {
-                transpose[k].row = sparse[j].col; // Swap col → row
-                transpose[k].col = sparse[j].row; // Swap row → col
-                transpose[k].val = sparse[j].val;
-                k++;
-            }
+            break; // Sentinel check - I googled it
+        }
+
+        nonZero++; // Increase non-zero count
+
+        sparse[nonZero].row = r;
+        sparse[nonZero].col = c;
+        sparse[nonZero].val = v;
+
+        // Tracking the largest row and column index for dimensions
+        if(r > maxRow)
+        {
+            maxRow = r;
+        }
+
+        if(c > maxCol)
+        {
+            maxCol = c;
         }
     }
 
-    // Printing transposed matrix in 3-tuple form
-    printf("\nTransposed 3-tuple representation:\n");
-    for(int i = 0; i <= nonZero; i++)
+    // First entry holds matrix metadata (rows, cols, non-zero count)
+    sparse[0].row = maxRow + 1;
+    sparse[0].col = maxCol + 1;
+    sparse[0].val = nonZero;
+
+    // Metadata for transpose
+    transpose[0].row = sparse[0].col;
+    transpose[0].col = sparse[0].row;
+    transpose[0].val = nonZero;
+
+    // Actual transpose logic: Swap row and col indices of each element
+    for(int j = 1; j <= nonZero; j++)
     {
-        printf("%d \t %d \t %d \n", transpose[i].row, transpose[i].col, transpose[i].val);
+        transpose[j].row = sparse[j].col;
+        transpose[j].col = sparse[j].row;
+        transpose[j].val = sparse[j].val;
+    }
+
+    // Output Section YAY
+    printf("\nTranspose of Sparse Matrix:\n");
+    printf("R\tC\tElement\n");
+
+    for(int i = 1; i <= nonZero; i++)
+    {
+        printf("%d\t%d\t%d\n", transpose[i].row, transpose[i].col, transpose[i].val);
     }
 
     return 0;
@@ -68,22 +83,25 @@ int main()
 
 /*
 > SAMPLE INPUT
-______________
+_______________
 
-    Enter number of rows, columns, and non-zero elements: 3 3 4
-    Enter the 3-tuple representation (row col value):
-    0 0 5
-    0 2 8
-    1 1 3
-    2 0 6
+    Enter sparse in 3-tuple format.
+    Enter -1 -1 -1 to stop:
+        4 5 4
+        0 2 33
+        1 1 17
+        2 3 46
+        3 4 51
+        -1 -1 -1
 
 > SAMPLE OUTPUT
 _______________
 
-    Transposed 3-tuple representation:
-    3 3	4
-    0 0	5
-    0 2	6
-    1 1	3
-    2 0	8
+    Transpose of sparse matrix:
+        R     C     Element
+        5        4       4
+        2        0       33
+        1        1       17
+        3        2       46
+        4        3       51
 */
