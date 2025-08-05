@@ -98,7 +98,7 @@ _______________
 _______________
 
     Transpose of sparse matrix:
-        R     C     Element
+        R        C     Element
         5        4       4
         2        0       33
         1        1       17
