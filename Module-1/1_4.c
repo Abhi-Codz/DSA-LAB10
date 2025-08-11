@@ -1,73 +1,71 @@
-#include <stdio.h> // Standard input/output functions
+#include <stdio.h> // Standard input-output library
 
-// Define a structure to represent a complex number
-typedef struct {
-    float real; // Real part of the complex number
-    float imag; // Imaginary part of the complex number
-} Complex;
+// Define a structure named 'Complex' to represent a complex number.
+// A complex number has a real part and an imaginary part.
+struct Complex {
+    float real;
+    float imaginary;
+};
 
-// Function to add two complex numbers (call by value)
-// This function takes two Complex structures as arguments and returns a new Complex structure
-// representing their sum. The original complex numbers are not modified.
-Complex addComplex(Complex num1, Complex num2) {
-    Complex result; // Declare a Complex structure to store the sum
-    result.real = num1.real + num2.real; // Add the real parts
-    result.imag = num1.imag + num2.imag; // Add the imaginary parts
-    return result; // Return the resulting complex number
+// Function to add two complex numbers using 'call by value'.
+// It takes two 'Complex' struct variables as arguments.
+// Changes to c1 and c2 inside this function do NOT affect the original variables.
+struct Complex addComplex(struct Complex c1, struct Complex c2) {
+    struct Complex sum; // Create a new Complex struct to store the result.
+    sum.real = c1.real + c2.real;         // Add the real parts.
+    sum.imaginary = c1.imaginary + c2.imaginary; // Add the imaginary parts.
+    return sum; // Return the resulting complex number.
 }
 
-// Function to multiply two complex numbers (call by address)
-// This function takes pointers to two Complex structures as arguments and a pointer to
-// a third Complex structure where the result will be stored.
-// Using call by address allows the function to modify the content of the result variable
-// directly, rather than returning a copy.
-void multiplyComplex(Complex *num1_ptr, Complex *num2_ptr, Complex *result_ptr) {
-    // Dereference the pointers to access the real and imaginary parts
-    // (a + bi) * (c + di) = (ac - bd) + (ad + bc)i
-    result_ptr->real = (num1_ptr->real * num2_ptr->real) - (num1_ptr->imag * num2_ptr->imag);
-    result_ptr->imag = (num1_ptr->real * num2_ptr->imag) + (num1_ptr->imag * num2_ptr->real);
+// Function to multiply two complex numbers using 'call by address'.
+// It takes pointers to two 'Complex' struct variables (c1 and c2) for input,
+// and a pointer to a 'Complex' struct variable (result) to store the product.
+// This allows the function to directly modify the 'result' variable in the calling function.
+void multiplyComplex(struct Complex *c1, struct Complex *c2, struct Complex *result) {
+    // Formula for complex number multiplication: (a + bi) * (c + di) = (ac - bd) + (ad + bc)i
+    // Access members using the arrow operator (->) for pointers to structures.
+    result->real = (c1->real * c2->real) - (c1->imaginary * c2->imaginary);
+    result->imaginary = (c1->real * c2->imaginary) + (c1->imaginary * c2->real);
 }
 
 int main() {
-    Complex c1, c2;     // Declare two complex numbers
-    Complex sum_result; // To store the result of addition
-    Complex mul_result; // To store the result of multiplication
-    int choice;         // To store user's menu choice
+    struct Complex c_num1, c_num2; // Declare two complex number variables for input.
+    struct Complex c_sum, c_product; // Declare variables to store the sum and product.
+    int choice; // Variable for menu choice.
 
-    // Get the first complex number from the user
+    // Prompt user to enter the first complex number.
     printf("Enter complex number 1 (real imaginary): ");
-    scanf("%f %f", &c1.real, &c1.imag);
+    scanf("%f %f", &c_num1.real, &c_num1.imaginary);
 
-    // Get the second complex number from the user
+    // Prompt user to enter the second complex number.
     printf("Enter complex number 2 (real imaginary): ");
-    scanf("%f %f", &c2.real, &c2.imag);
+    scanf("%f %f", &c_num2.real, &c_num2.imaginary);
 
-    // Display the menu
+    // Display the menu options.
     printf("\nMENU\n");
-    printf("1. Addition\n");
-    printf("2. Multiplication\n");
+    printf("1. addition\n");
+    printf("2. multiplication\n");
     printf("Enter your choice: ");
-    scanf("%d", &choice); // Read user's choice
+    scanf("%d", &choice); // Read user's choice.
 
-    // Perform operation based on user's choice
+    // Use a switch statement to perform the chosen operation.
     switch (choice) {
         case 1:
-            // Call addComplex using call by value
-            sum_result = addComplex(c1, c2);
-            // Display the sum
-            printf("Sum=%.0f+%.0fi\n", sum_result.real, sum_result.imag);
+            // Call the addComplex function. Since it's call by value,
+            // copies of c_num1 and c_num2 are passed. The function returns the sum.
+            c_sum = addComplex(c_num1, c_num2);
+            printf("Sum=%.0f+%.0fi\n", c_sum.real, c_sum.imaginary);
             break;
         case 2:
-            // Call multiplyComplex using call by address
-            // Pass the addresses of c1, c2, and mul_result
-            multiplyComplex(&c1, &c2, &mul_result);
-            // Display the product
-            printf("Sum=%.0f+%.0fi\n", mul_result.real, mul_result.imag);
+            // Call the multiplyComplex function. Since it's call by address,
+            // memory addresses of c_num1, c_num2, and c_product are passed.
+            // The function directly modifies c_product.
+            multiplyComplex(&c_num1, &c_num2, &c_product);
+            printf("Product=%.0f+%.0fi\n", c_product.real, c_product.imaginary);
             break;
         default:
-            printf("Invalid choice! Please enter 1 or 2.\n");
-            break;
+            printf("Invalid choice.\n");
     }
 
-    return 0; // Indicate successful execution
+    return 0; // Indicate successful program execution.
 }

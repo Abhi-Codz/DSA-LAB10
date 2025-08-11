@@ -1,47 +1,32 @@
-// Q-1.1 Write a program to read two numbers and compare the numbers using function call by address.
+#include <stdio.h> // Standard input-output library
 
-#include <stdio.h>
-
-// Defining a function with pointer parameters
-void compare(int *n_1, int *n_2)
-{
-    // Comparing the integer values
-    if(*n_1 > *n_2)  
-    {
-        printf("%d is greater than %d", *n_1, *n_2);
-    }
-    else if(*n_1 < *n_2) 
-    {
-        printf("%d is greater than %d", *n_2, *n_1);
-    }
-    else
-    {
-        printf("Same numbers"); // Returns in case the entered input's the same
+// Function to compare two numbers using call by address.
+// It takes pointers to two integers, meaning it receives their memory addresses.
+void compareNumbers(int *num1, int *num2) {
+    // Dereference the pointers (*num1, *num2) to access the actual values
+    // stored at those memory addresses.
+    if (*num1 < *num2) {
+        printf("%d is smaller than %d\n", *num1, *num2);
+    } else if (*num1 > *num2) {
+        printf("%d is greater than %d\n", *num1, *num2);
+    } else {
+        printf("Both numbers are same\n");
     }
 }
- 
-// Main function
-int main()
-{
-    int n1, n2; // Holds user input
-    printf("Enter the First Number: ");
-    scanf("%d", &n1);
-    printf("Enter the Second Number: ");
-    scanf("%d", &n2);
-    
-    compare(&n1, &n2); // Recalling the function
-    return 0;
+
+int main() {
+    int number1, number2;
+
+    // Prompt the user to enter two numbers.
+    printf("Enter two numbers: ");
+    // Read the numbers. The '&' operator gets the memory address of the variables,
+    // which are then passed to scanf.
+    scanf("%d %d", &number1, &number2);
+
+    // Call the compareNumbers function, passing the addresses of number1 and number2.
+    // This is 'call by address' because the function can directly access and
+    // operate on the original variables in the main function's memory space.
+    compareNumbers(&number1, &number2);
+
+    return 0; // Indicate successful program execution.
 }
-
-/*
-> SAMPLE INPUT
-______________
-
-    Enter the First Number: 3
-    Enter the Second Number: 5
-
-> SAMPLE OUTPUT
-_______________
-
-    5 is greater than 3
-*/
