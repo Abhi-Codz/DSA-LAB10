@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // 3.2 WAP to perform addition of two given sparse matrix in 3–tuple format.
 
 #include <stdio.h>
@@ -134,6 +135,149 @@ int main()
     }
 
     return 0;
+=======
+#include <stdio.h> // Standard input-output library
+
+// Function to add two sparse matrices represented in 3-tuple format.
+// matrix1[101][3]: First sparse matrix in 3-tuple format.
+// matrix2[101][3]: Second sparse matrix in 3-tuple format.
+// result[202][3]: Array to store the sum of the two matrices in 3-tuple format.
+//                Max possible non-zero elements is sum of non-zero elements from both + 1 for header.
+void addSparseMatrices(int matrix1[101][3], int matrix2[101][3], int result[202][3]) {
+    // Get header information from both input matrices.
+    int rows1 = matrix1[0][0];
+    int cols1 = matrix1[0][1];
+    int nonZeroCount1 = matrix1[0][2];
+
+    int rows2 = matrix2[0][0];
+    int cols2 = matrix2[0][1];
+    int nonZeroCount2 = matrix2[0][2];
+
+    // Check if matrices can be added (must have same dimensions).
+    if (rows1 != rows2 || cols1 != cols2) {
+        printf("Error: Matrices have different dimensions and cannot be added.\n");
+        // Set result header to indicate an invalid operation or empty matrix.
+        result[0][0] = 0; result[0][1] = 0; result[0][2] = 0;
+        return;
+    }
+
+    // Initialize result matrix header with common dimensions.
+    result[0][0] = rows1;
+    result[0][1] = cols1;
+    int k = 1; // Index for placing elements in the result matrix.
+
+    int i = 1, j = 1; // Pointers for iterating through matrix1 and matrix2 elements.
+
+    // Traverse both matrices simultaneously.
+    while (i <= nonZeroCount1 && j <= nonZeroCount2) {
+        // Compare elements based on their row and then column indices.
+        if (matrix1[i][0] < matrix2[j][0]) { // Element from matrix1 comes first (smaller row)
+            result[k][0] = matrix1[i][0];
+            result[k][1] = matrix1[i][1];
+            result[k][2] = matrix1[i][2];
+            i++;
+        } else if (matrix2[j][0] < matrix1[i][0]) { // Element from matrix2 comes first (smaller row)
+            result[k][0] = matrix2[j][0];
+            result[k][1] = matrix2[j][1];
+            result[k][2] = matrix2[j][2];
+            j++;
+        } else { // Rows are same, compare columns.
+            if (matrix1[i][1] < matrix2[j][1]) { // Element from matrix1 comes first (smaller col)
+                result[k][0] = matrix1[i][0];
+                result[k][1] = matrix1[i][1];
+                result[k][2] = matrix1[i][2];
+                i++;
+            } else if (matrix2[j][1] < matrix1[i][1]) { // Element from matrix2 comes first (smaller col)
+                result[k][0] = matrix2[j][0];
+                result[k][1] = matrix2[j][1];
+                result[k][2] = matrix2[j][2];
+                j++;
+            } else { // Both row and column indices are same (common element), so add their values.
+                result[k][0] = matrix1[i][0];
+                result[k][1] = matrix1[i][1];
+                result[k][2] = matrix1[i][2] + matrix2[j][2]; // Add values
+                i++;
+                j++;
+            }
+        }
+        // Only increment k if the added value is non-zero.
+        // If a sum becomes zero, it's no longer a non-zero element in the sparse representation.
+        if (result[k][2] != 0) {
+            k++;
+        }
+    }
+
+    // Add any remaining elements from matrix1 (if matrix2 finished first).
+    while (i <= nonZeroCount1) {
+        result[k][0] = matrix1[i][0];
+        result[k][1] = matrix1[i][1];
+        result[k][2] = matrix1[i][2];
+        i++;
+        k++;
+    }
+
+    // Add any remaining elements from matrix2 (if matrix1 finished first).
+    while (j <= nonZeroCount2) {
+        result[k][0] = matrix2[j][0];
+        result[k][1] = matrix2[j][1];
+        result[k][2] = matrix2[j][2];
+        j++;
+        k++;
+    }
+
+    // Update the non-zero count in the result matrix header.
+    // (k-1) because k would have incremented one extra time after the last element.
+    result[0][2] = k - 1;
+}
+
+int main() {
+    int matrix1[101][3], matrix2[101][3]; // Input matrices
+    int result[202][3];                   // Result matrix
+
+    int rows1, cols1, nonZeroCount1;
+    int rows2, cols2, nonZeroCount2;
+
+    // --- Input for Matrix 1 ---
+    printf("Enter sparse matrix-1 in 3-tuple format:\n");
+    printf("Enter Total Rows, Total Columns, and Non-Zero Elements Count: ");
+    scanf("%d %d %d", &rows1, &cols1, &nonZeroCount1);
+
+    matrix1[0][0] = rows1;
+    matrix1[0][1] = cols1;
+    matrix1[0][2] = nonZeroCount1;
+
+    printf("Enter %d non-zero elements for matrix-1 (row col value):\n", nonZeroCount1);
+    for (int i = 1; i <= nonZeroCount1; i++) {
+        scanf("%d %d %d", &matrix1[i][0], &matrix1[i][1], &matrix1[i][2]);
+    }
+
+    // --- Input for Matrix 2 ---
+    printf("\nEnter sparse matrix-2 in 3-tuple format:\n");
+    printf("Enter Total Rows, Total Columns, and Non-Zero Elements Count: ");
+    scanf("%d %d %d", &rows2, &cols2, &nonZeroCount2);
+
+    matrix2[0][0] = rows2;
+    matrix2[0][1] = cols2;
+    matrix2[0][2] = nonZeroCount2;
+
+    printf("Enter %d non-zero elements for matrix-2 (row col value):\n", nonZeroCount2);
+    for (int i = 1; i <= nonZeroCount2; i++) {
+        scanf("%d %d %d", &matrix2[i][0], &matrix2[i][1], &matrix2[i][2]);
+    }
+
+    // Call the function to add the sparse matrices.
+    addSparseMatrices(matrix1, matrix2, result);
+
+    // Display the resultant matrix.
+    printf("\nResultant Matrix in 3-tuple format\n");
+    printf("%d %d %d\n", result[0][0], result[0][1], result[0][2]); // Print header
+
+    for (int i = 1; i <= result[0][2]; i++) {
+        printf("%d %d %d\n", result[i][0], result[i][1], result[i][2]);
+    }
+
+    return 0; // Indicate successful program execution.
+>>>>>>> bc643be (Updated code with appropriate commenting to explain the code better)
 }
 
 /*
